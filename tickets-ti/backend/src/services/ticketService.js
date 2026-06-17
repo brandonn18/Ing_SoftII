@@ -30,12 +30,23 @@ const _slaLimite = async (prioridad) => {
 const crearTicket = async (data) => {
   const prioridad = data.prioridad || 'media';
   const sla_limite = await _slaLimite(prioridad);
-  const id = await generarId();
-  const ticket = await Ticket.create({ ...data, id, estado: 'abierto', sla_limite });
+
+  // Reintenta ante colisión de ID por acceso concurrente
+  let ticket = null;
+  let intentos = 0;
+  while (!ticket) {
+    const id = await generarId();
+    try {
+      ticket = await Ticket.create({ ...data, id, estado: 'abierto', sla_limite });
+    } catch (err) {
+      if (err.name === 'SequelizeUniqueConstraintError' && intentos++ < 10) continue;
+      throw err;
+    }
+  }
 
   await AuditLog.create({
     usuarioId: data.usuarioId,
-    ticketId: ticket.id,
+    ticketId:  ticket.id,
     accion: 'TICKET_CREADO',
     detalle: { titulo: ticket.titulo, categoria: ticket.categoria, prioridad },
   });
