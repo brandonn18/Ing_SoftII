@@ -1,11 +1,19 @@
+// jest.mock se iza al tope del módulo: intercepta ANTES de que users.controller.js
+// importe sendWelcomeEmail, resolviendo el problema de la desestructuración.
+jest.mock('../../src/services/notificationService', () => ({
+  ...jest.requireActual('../../src/services/notificationService'),
+  sendWelcomeEmail: jest.fn().mockResolvedValue({ messageId: 'mock-test' }),
+  sendPasswordResetEmail: jest.fn().mockResolvedValue({ messageId: 'mock-test' }),
+}));
+
 const request = require('supertest');
 const app = require('../../src/app');
 const { sequelize, User } = require('../../src/models');
+const notifService = require('../../src/services/notificationService');
 
-// ─── Setup ──────────────────────────────────────────────────────────────────
+// ─── Setup global ────────────────────────────────────────────────────────────
 
 beforeAll(async () => {
-  process.env.NODE_ENV = 'test';
   await sequelize.sync({ force: true });
   await User.create({
     nombre: 'Admin Unit',
@@ -19,24 +27,45 @@ afterAll(async () => {
   await sequelize.close();
 });
 
-// ─── CP007: Login con credenciales válidas ───────────────────────────────────
+// ─── CP007: Login exitoso con credenciales válidas ────────────────────────────
 
-describe('CP007 — Login con credenciales válidas', () => {
-  it('debería retornar token JWT con estructura correcta', async () => {
+describe('CP007 — Login exitoso con credenciales válidas', () => {
+  let usuarioNormal;
+
+  beforeAll(async () => {
+    usuarioNormal = await User.create({
+      nombre: 'Pedro Usuario',
+      email: 'pedro@test.com',
+      password: 'Pedro123!',
+      rol: 'usuario',
+    });
+  });
+
+  it('CP007 - Login exitoso retorna token JWT y datos del usuario', async () => {
     const res = await request(app)
       .post('/api/auth/login')
-      .send({ email: 'admin.unit@test.com', password: 'Admin123!' });
+      .send({ email: 'pedro@test.com', password: 'Pedro123!' });
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.data).toHaveProperty('token');
-    expect(res.body.data).toHaveProperty('user');
-    expect(res.body.data.user).not.toHaveProperty('password');
-    expect(res.body.data.user.email).toBe('admin.unit@test.com');
-    expect(res.body.data.user.rol).toBe('administrador');
+    expect(res.body.data.user.rol).toBe('usuario');
   });
 
-  it('debería reiniciar contador de intentos al loguearse correctamente', async () => {
+  it('CP007 - Login responde con nombre y email del usuario sin exponer password', async () => {
+    const res = await request(app)
+      .post('/api/auth/login')
+      .send({ email: 'pedro@test.com', password: 'Pedro123!' });
+
+    expect(res.status).toBe(200);
+    expect(res.body.data.user).toHaveProperty('nombre');
+    expect(res.body.data.user).toHaveProperty('email');
+    expect(res.body.data.user.email).toBe('pedro@test.com');
+    expect(res.body.data.user.nombre).toBe('Pedro Usuario');
+    expect(res.body.data.user).not.toHaveProperty('password');
+  });
+
+  it('CP007 - Login con admin retorna token JWT y reinicia intentos fallidos previos', async () => {
     await request(app).post('/api/auth/login').send({ email: 'admin.unit@test.com', password: 'wrong' });
 
     const res = await request(app)
@@ -44,13 +73,14 @@ describe('CP007 — Login con credenciales válidas', () => {
       .send({ email: 'admin.unit@test.com', password: 'Admin123!' });
 
     expect(res.status).toBe(200);
+    expect(res.body.data).toHaveProperty('token');
 
     const user = await User.findOne({ where: { email: 'admin.unit@test.com' } });
     expect(user.intentos_login).toBe(0);
   });
 });
 
-// ─── Intentos fallidos e incremento de contador ─────────────────────────────
+// ─── Login con credenciales incorrectas ──────────────────────────────────────
 
 describe('Login con contraseña incorrecta', () => {
   let userIntentos;
@@ -84,7 +114,7 @@ describe('Login con contraseña incorrecta', () => {
   });
 });
 
-// ─── CP008: Bloqueo tras 5 intentos fallidos ────────────────────────────────
+// ─── CP008: Bloqueo de cuenta tras 5 intentos fallidos ───────────────────────
 
 describe('CP008 — Bloqueo de cuenta tras 5 intentos fallidos', () => {
   let userBloqueo;
@@ -98,7 +128,7 @@ describe('CP008 — Bloqueo de cuenta tras 5 intentos fallidos', () => {
     });
   });
 
-  it('debería bloquear la cuenta después del 5.º intento fallido y retornar 423', async () => {
+  it('CP008 - Bloquea la cuenta en el 5.º intento fallido y retorna 423', async () => {
     for (let i = 0; i < 5; i++) {
       await request(app)
         .post('/api/auth/login')
@@ -115,18 +145,21 @@ describe('CP008 — Bloqueo de cuenta tras 5 intentos fallidos', () => {
 
     await userBloqueo.reload();
     expect(userBloqueo.bloqueado_hasta).not.toBeNull();
+    expect(new Date(userBloqueo.bloqueado_hasta).getTime()).toBeGreaterThan(Date.now());
   });
 
-  it('debería seguir bloqueada incluso con contraseña correcta', async () => {
+  it('CP008 - Cuenta bloqueada rechaza login aunque la contraseña sea correcta', async () => {
     const res = await request(app)
       .post('/api/auth/login')
       .send({ email: 'bloqueo@test.com', password: 'Bloqueo123!' });
 
     expect(res.status).toBe(423);
+    expect(res.body.success).toBe(false);
+    expect(res.body.message).toMatch(/bloqueada/i);
   });
 });
 
-// ─── Token inválido retorna 401 ──────────────────────────────────────────────
+// ─── Validación de token JWT ──────────────────────────────────────────────────
 
 describe('Validación de token JWT', () => {
   it('debería retornar 401 con token malformado', async () => {
@@ -143,7 +176,7 @@ describe('Validación de token JWT', () => {
     expect(res.status).toBe(401);
   });
 
-  it('debería retornar 401 con token expirado (firma incorrecta)', async () => {
+  it('debería retornar 401 con token de firma incorrecta', async () => {
     const fakeToken =
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.' +
       'eyJpZCI6OTk5LCJlbWFpbCI6ImZha2VAdGVzdC5jb20ifQ.' +
@@ -157,7 +190,7 @@ describe('Validación de token JWT', () => {
   });
 });
 
-// ─── Refresh token ───────────────────────────────────────────────────────────
+// ─── Refresh token ────────────────────────────────────────────────────────────
 
 describe('Refresh token', () => {
   let token;
@@ -170,13 +203,12 @@ describe('Refresh token', () => {
       rol: 'usuario',
     });
 
-    // Sobreescribir exp para simular token próximo a vencer (dentro de 30 min)
     const jwt = require('jsonwebtoken');
     const { jwtSecret } = require('../../src/config/auth');
     token = jwt.sign(
       { id: userRefresh.id, email: userRefresh.email, rol: userRefresh.rol, nombre: userRefresh.nombre },
       jwtSecret,
-      { expiresIn: '1800s' } // 30 minutos → elegible para renovación
+      { expiresIn: '1800s' } // 30 min → elegible para renovación (< 1h)
     );
   });
 
@@ -192,9 +224,9 @@ describe('Refresh token', () => {
   });
 });
 
-// ─── CP011: Admin crea usuario con rol y notificación ───────────────────────
+// ─── CP011: Admin crea usuario con rol y notificación ────────────────────────
 
-describe('CP011 — Admin crea usuario', () => {
+describe('CP011 — Admin crea usuario con rol asignado', () => {
   let adminToken;
 
   beforeAll(async () => {
@@ -204,7 +236,11 @@ describe('CP011 — Admin crea usuario', () => {
     adminToken = res.body.data.token;
   });
 
-  it('debería crear usuario con el rol indicado y retornar datos sin password', async () => {
+  beforeEach(() => {
+    notifService.sendWelcomeEmail.mockClear();
+  });
+
+  it('CP011 - Admin crea usuario con rol asignado y retorna datos sin password', async () => {
     const res = await request(app)
       .post('/api/users')
       .set('Authorization', `Bearer ${adminToken}`)
@@ -222,6 +258,22 @@ describe('CP011 — Admin crea usuario', () => {
     expect(res.body.data).not.toHaveProperty('password');
   });
 
+  it('CP011 - Email de bienvenida enviado al crear usuario (mock nodemailer)', async () => {
+    await request(app)
+      .post('/api/users')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        nombre: 'Usuario Email Test',
+        email: 'emailtest.cp011@test.com',
+        password: 'Test123!!',
+        rol: 'usuario',
+      });
+
+    expect(notifService.sendWelcomeEmail).toHaveBeenCalledTimes(1);
+    const [llamadoUser] = notifService.sendWelcomeEmail.mock.calls[0];
+    expect(llamadoUser).toHaveProperty('email', 'emailtest.cp011@test.com');
+  });
+
   it('no debería crear usuario si el email ya existe', async () => {
     const res = await request(app)
       .post('/api/users')
@@ -237,7 +289,6 @@ describe('CP011 — Admin crea usuario', () => {
   });
 
   it('no debería permitir crear usuario si no es administrador', async () => {
-    // Crear un usuario regular y obtener su token
     await User.create({
       nombre: 'User Regular',
       email: 'regular@test.com',

@@ -41,14 +41,5 @@
     "nodemon": "^3.0.2",
     "sequelize-cli": "^6.6.2",
     "supertest": "^6.3.3"
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "testMatch": [
-      "**/tests/**/*.test.js"
-    ],
-    "collectCoverageFrom": [
-      "src/**/*.js"
-    ]
   }
 }
