@@ -96,6 +96,8 @@ export default function TicketDetail() {
   const [ticket, setTicket] = useState(null);
   const [tecnicos, setTecnicos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [comentario, setComentario] = useState('');
+  const [cambiandoEstado, setCambiandoEstado] = useState(false);
   const [motivo, setMotivo] = useState('');
   const [reabriendo, setReabriendo] = useState(false);
   const [showReopenForm, setShowReopenForm] = useState(false);
@@ -112,12 +114,16 @@ export default function TicketDetail() {
   }, [id, user]);
 
   const handleEstado = async (estado) => {
+    setCambiandoEstado(true);
     try {
-      const updated = await ticketService.updateStatus(id, estado, null);
+      const updated = await ticketService.updateStatus(id, estado, comentario.trim() || undefined);
       setTicket(updated);
+      setComentario('');
       toast.success('Estado actualizado');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Error al actualizar estado');
+    } finally {
+      setCambiandoEstado(false);
     }
   };
 
@@ -159,11 +165,11 @@ export default function TicketDetail() {
   const transicionesDisponibles = user?.rol === 'administrador'
     ? (TRANSICIONES[ticket.estado] || [])
     : (TRANSICIONES[ticket.estado] || []).filter(
-        () => user?.rol === 'tecnico' && ticket.tecnicoId === user?.id
+        () => user?.rol === 'tecnico' && Number(ticket.tecnicoId) === Number(user?.id)
       );
 
   const puedeActuar = user?.rol === 'administrador' ||
-    (user?.rol === 'tecnico' && ticket.tecnicoId === user?.id);
+    (user?.rol === 'tecnico' && Number(ticket.tecnicoId) === Number(user?.id));
 
   return (
     <div className="max-w-3xl mx-auto space-y-4">
@@ -202,16 +208,26 @@ export default function TicketDetail() {
         <div className="bg-white rounded-xl shadow p-6">
           <h2 className="font-semibold text-gray-700 mb-3">Cambiar estado</h2>
           {transicionesDisponibles.length > 0 ? (
-            <div className="flex gap-2 flex-wrap">
-              {transicionesDisponibles.map((e) => (
-                <button
-                  key={e}
-                  onClick={() => handleEstado(e)}
-                  className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 capitalize transition-colors"
-                >
-                  → {e.replace('_', ' ')}
-                </button>
-              ))}
+            <div className="space-y-3">
+              <textarea
+                value={comentario}
+                onChange={(e) => setComentario(e.target.value)}
+                placeholder="Comentario opcional sobre el cambio de estado..."
+                rows={2}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              />
+              <div className="flex gap-2 flex-wrap">
+                {transicionesDisponibles.map((e) => (
+                  <button
+                    key={e}
+                    onClick={() => handleEstado(e)}
+                    disabled={cambiandoEstado}
+                    className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 capitalize transition-colors disabled:opacity-50"
+                  >
+                    → {e.replace('_', ' ')}
+                  </button>
+                ))}
+              </div>
             </div>
           ) : (
             <p className="text-sm text-gray-400">No hay transiciones disponibles desde "{ticket.estado}".</p>

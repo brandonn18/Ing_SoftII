@@ -20,7 +20,7 @@ router.post('/', [
 router.patch('/:id/status', authorize('administrador', 'tecnico'), [
   body('estado').isIn(['abierto', 'asignado', 'en_proceso', 'en_espera', 'resuelto', 'cerrado'])
     .withMessage('Estado inválido'),
-  body('comentario').optional().isString(),
+  body('comentario').optional({ nullable: true }).isString(),
 ], ctrl.updateStatus);
 
 router.put('/:id', authorize('administrador', 'tecnico'), [
