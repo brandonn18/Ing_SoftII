@@ -45,7 +45,7 @@ export const NotificationProvider = ({ children }) => {
     });
 
     socket.on('ticket:sla_alerta', ({ ticketId, porcentaje }) => {
-      toast.warn(`⚠️ Alerta SLA: ticket ${ticketId} al ${porcentaje}%`, { autoClose: 6000 });
+      toast.warn(`Alerta SLA: ticket ${ticketId} al ${porcentaje}%`, { autoClose: 6000 });
     });
 
     socket.on('estadisticas:actualizadas', () => {

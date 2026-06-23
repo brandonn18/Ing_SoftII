@@ -68,7 +68,7 @@ function UserModal({ user, onClose, onSaved }) {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between px-6 py-4 border-b">
           <h2 className="text-lg font-semibold text-gray-900">
             {esEdicion ? 'Editar usuario' : 'Crear usuario'}
@@ -87,7 +87,7 @@ function UserModal({ user, onClose, onSaved }) {
               type="text"
               value={form.nombre}
               onChange={set('nombre')}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="Ej: Juan Pérez"
             />
             {errors.nombre && <p className="text-red-500 text-xs mt-1">{errors.nombre}</p>}
@@ -99,7 +99,7 @@ function UserModal({ user, onClose, onSaved }) {
               type="email"
               value={form.email}
               onChange={set('email')}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="correo@empresa.com"
             />
             {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
@@ -112,7 +112,7 @@ function UserModal({ user, onClose, onSaved }) {
                 type="password"
                 value={form.password}
                 onChange={set('password')}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 placeholder="Mín. 8 caracteres, 1 mayúscula, 1 número"
               />
               {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
@@ -124,7 +124,7 @@ function UserModal({ user, onClose, onSaved }) {
             <select
               value={form.rol}
               onChange={set('rol')}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
               <option value="usuario">Usuario</option>
               <option value="tecnico">Técnico</option>
@@ -140,7 +140,7 @@ function UserModal({ user, onClose, onSaved }) {
                 id="activo"
                 checked={form.activo}
                 onChange={set('activo')}
-                className="h-4 w-4 text-blue-600 rounded border-gray-300"
+                className="h-4 w-4 text-indigo-600 rounded border-gray-300"
               />
               <label htmlFor="activo" className="text-sm text-gray-700">Cuenta activa</label>
             </div>
@@ -150,7 +150,7 @@ function UserModal({ user, onClose, onSaved }) {
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
+              className="flex-1 bg-indigo-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 transition-colors"
             >
               {saving ? 'Guardando...' : esEdicion ? 'Guardar cambios' : 'Crear usuario'}
             </button>
@@ -241,7 +241,7 @@ export default function Users() {
         </div>
         <button
           onClick={() => setModal('crear')}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center gap-2"
+          className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors flex items-center gap-2"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -251,18 +251,18 @@ export default function Users() {
       </div>
 
       {/* Filtros */}
-      <div className="bg-white rounded-xl shadow p-4 mb-4 flex flex-wrap gap-3">
+      <div className="bg-white rounded-2xl shadow-sm p-4 mb-4 flex flex-wrap gap-3">
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar por nombre o email..."
-          className="flex-1 min-w-48 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 min-w-48 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
         <select
           value={filtroRol}
           onChange={(e) => setFiltroRol(e.target.value)}
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         >
           <option value="">Todos los roles</option>
           <option value="usuario">Usuario</option>
@@ -272,7 +272,7 @@ export default function Users() {
         <select
           value={filtroActivo}
           onChange={(e) => setFiltroActivo(e.target.value)}
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         >
           <option value="">Todos los estados</option>
           <option value="true">Activos</option>
@@ -281,7 +281,7 @@ export default function Users() {
       </div>
 
       {/* Tabla */}
-      <div className="bg-white rounded-xl shadow overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
         {loading ? (
           <div className="text-center py-16 text-gray-400">Cargando...</div>
         ) : users.length === 0 ? (
@@ -321,7 +321,7 @@ export default function Users() {
                       <button
                         onClick={() => setModal(u)}
                         title="Editar"
-                        className="p-1.5 rounded hover:bg-blue-50 text-blue-600 transition-colors"
+                        className="p-1.5 rounded hover:bg-indigo-50 text-indigo-600 transition-colors"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -385,7 +385,7 @@ export default function Users() {
                     onClick={() => fetchUsers(p)}
                     className={`px-3 py-1 text-xs rounded border transition-colors ${
                       p === meta.page
-                        ? 'bg-blue-600 text-white border-blue-600'
+                        ? 'bg-indigo-600 text-white border-indigo-600'
                         : 'border-gray-300 hover:bg-white'
                     }`}
                   >

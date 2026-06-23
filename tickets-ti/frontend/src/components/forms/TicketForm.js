@@ -13,7 +13,7 @@ export default function TicketForm({ onSubmit, loading, defaultValues = {} }) {
         <label className="block text-sm font-medium text-gray-700 mb-1">Título *</label>
         <input
           {...register('titulo', { required: 'Título requerido', minLength: { value: 5, message: 'Mínimo 5 caracteres' } })}
-          className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
         {errors.titulo && <p className="text-red-600 text-sm mt-1">{errors.titulo.message}</p>}
       </div>
@@ -23,7 +23,7 @@ export default function TicketForm({ onSubmit, loading, defaultValues = {} }) {
         <textarea
           {...register('descripcion', { required: 'Descripción requerida' })}
           rows={4}
-          className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
         {errors.descripcion && <p className="text-red-600 text-sm mt-1">{errors.descripcion.message}</p>}
       </div>
@@ -31,7 +31,7 @@ export default function TicketForm({ onSubmit, loading, defaultValues = {} }) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Tipo *</label>
-          <select {...register('tipo', { required: true })} className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <select {...register('tipo', { required: true })} className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
             <option value="">Seleccionar...</option>
             {TIPOS.map((t) => <option key={t} value={t}>{t}</option>)}
           </select>
@@ -39,7 +39,7 @@ export default function TicketForm({ onSubmit, loading, defaultValues = {} }) {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Categoría *</label>
-          <select {...register('categoria', { required: true })} className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <select {...register('categoria', { required: true })} className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
             <option value="">Seleccionar...</option>
             {CATEGORIAS.map((c) => <option key={c} value={c}>{c.replace('_', ' ')}</option>)}
           </select>
@@ -47,7 +47,7 @@ export default function TicketForm({ onSubmit, loading, defaultValues = {} }) {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Prioridad</label>
-          <select {...register('prioridad')} className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <select {...register('prioridad')} className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
             {PRIORIDADES.map((p) => <option key={p} value={p}>{p}</option>)}
           </select>
         </div>
@@ -56,7 +56,7 @@ export default function TicketForm({ onSubmit, loading, defaultValues = {} }) {
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 font-medium"
+        className="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 disabled:opacity-50 font-medium"
       >
         {loading ? 'Guardando...' : 'Guardar Ticket'}
       </button>

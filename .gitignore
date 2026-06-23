@@ -33,6 +33,7 @@ desktop.ini
 .idea/
 *.swp
 *.swo
+CLAUDE.md
 
 # Docker
 .dockerignore

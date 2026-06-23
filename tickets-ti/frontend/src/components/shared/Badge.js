@@ -1,10 +1,10 @@
 const COLORS = {
   abierto: 'bg-blue-100 text-blue-800',
-  asignado: 'bg-yellow-100 text-yellow-800',
+  asignado: 'bg-indigo-100 text-indigo-800',
   en_proceso: 'bg-orange-100 text-orange-800',
-  en_espera: 'bg-purple-100 text-purple-800',
+  en_espera: 'bg-gray-200 text-gray-700',
   resuelto: 'bg-green-100 text-green-800',
-  cerrado: 'bg-gray-100 text-gray-800',
+  cerrado: 'bg-gray-700 text-white',
   baja: 'bg-green-100 text-green-800',
   media: 'bg-yellow-100 text-yellow-800',
   alta: 'bg-orange-100 text-orange-800',

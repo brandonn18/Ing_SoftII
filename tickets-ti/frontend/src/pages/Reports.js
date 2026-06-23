@@ -19,7 +19,7 @@ export default function Reports() {
     <div>
       <h1 className="text-2xl font-bold text-gray-900 mb-6">Reportes</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl shadow p-6">
+        <div className="bg-white rounded-2xl shadow-sm p-6">
           <h2 className="font-semibold text-gray-700 mb-4">Tickets por Estado</h2>
           <div className="space-y-3">
             {resumen?.porEstado?.map((e) => (
@@ -31,7 +31,7 @@ export default function Reports() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow p-6">
+        <div className="bg-white rounded-2xl shadow-sm p-6">
           <h2 className="font-semibold text-gray-700 mb-4">SLA</h2>
           <div className="space-y-4">
             <div className="flex justify-between">
@@ -45,7 +45,7 @@ export default function Reports() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow p-6 md:col-span-2">
+        <div className="bg-white rounded-2xl shadow-sm p-6 md:col-span-2">
           <h2 className="font-semibold text-gray-700 mb-4">Por Prioridad</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {resumen?.porPrioridad?.map((p) => (

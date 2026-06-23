@@ -64,7 +64,7 @@ function Timeline({ auditorias = [] }) {
     <ol className="relative border-l border-gray-200 ml-2 space-y-4">
       {auditorias.map((log) => (
         <li key={log.id} className="ml-4">
-          <div className="absolute -left-1.5 mt-1.5 h-3 w-3 rounded-full border-2 border-white bg-blue-500" />
+          <div className="absolute -left-1.5 mt-1.5 h-3 w-3 rounded-full border-2 border-white bg-indigo-500" />
           <div className="flex items-baseline gap-2 flex-wrap">
             <span className="text-sm font-medium text-gray-800">
               {ACCION_LABEL[log.accion] || log.accion}
@@ -174,7 +174,7 @@ export default function TicketDetail() {
   return (
     <div className="max-w-3xl mx-auto space-y-4">
       {/* Info principal */}
-      <div className="bg-white rounded-xl shadow p-6">
+      <div className="bg-white rounded-2xl shadow-sm p-6">
         <div className="flex items-start justify-between mb-4">
           <div>
             <p className="text-xs text-gray-400 font-mono mb-1">{ticket.id}</p>
@@ -205,7 +205,7 @@ export default function TicketDetail() {
 
       {/* Acciones para técnico y admin */}
       {puedeActuar && (
-        <div className="bg-white rounded-xl shadow p-6">
+        <div className="bg-white rounded-2xl shadow-sm p-6">
           <h2 className="font-semibold text-gray-700 mb-3">Cambiar estado</h2>
           {transicionesDisponibles.length > 0 ? (
             <div className="space-y-3">
@@ -214,7 +214,7 @@ export default function TicketDetail() {
                 onChange={(e) => setComentario(e.target.value)}
                 placeholder="Comentario opcional sobre el cambio de estado..."
                 rows={2}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
               />
               <div className="flex gap-2 flex-wrap">
                 {transicionesDisponibles.map((e) => (
@@ -239,7 +239,7 @@ export default function TicketDetail() {
               <select
                 onChange={(e) => handleAsignar(e.target.value)}
                 defaultValue=""
-                className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
                 <option value="">Seleccionar técnico...</option>
                 {tecnicos.map((t) => (
@@ -255,7 +255,7 @@ export default function TicketDetail() {
 
       {/* Reapertura (usuario o admin) */}
       {puedeReabrir && (
-        <div className="bg-white rounded-xl shadow p-6">
+        <div className="bg-white rounded-2xl shadow-sm p-6">
           <h2 className="font-semibold text-gray-700 mb-3">Reabrir ticket</h2>
           {!showReopenForm ? (
             <button
@@ -271,7 +271,7 @@ export default function TicketDetail() {
                 onChange={(e) => setMotivo(e.target.value)}
                 placeholder="Describe por qué necesitas reabrir este ticket..."
                 rows={3}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
               <div className="flex gap-2">
                 <button
@@ -295,7 +295,7 @@ export default function TicketDetail() {
       )}
 
       {/* Historial de cambios */}
-      <div className="bg-white rounded-xl shadow p-6">
+      <div className="bg-white rounded-2xl shadow-sm p-6">
         <h2 className="font-semibold text-gray-700 mb-4">Historial de cambios</h2>
         <Timeline auditorias={ticket.auditorias} />
       </div>

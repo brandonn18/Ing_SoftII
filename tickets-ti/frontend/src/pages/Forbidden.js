@@ -9,14 +9,14 @@ export default function Forbidden() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="text-center max-w-md">
-        <div className="text-8xl font-bold text-blue-100 mb-2">403</div>
+        <div className="text-8xl font-bold text-indigo-100 mb-2">403</div>
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Acceso denegado</h1>
         <p className="text-gray-500 mb-6">
           No tienes permisos para acceder a esta sección.
         </p>
         <button
           onClick={() => navigate(destino, { replace: true })}
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-medium transition-colors"
+          className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 font-medium transition-colors"
         >
           Volver al inicio
         </button>
