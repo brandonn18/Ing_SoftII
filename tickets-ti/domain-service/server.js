@@ -20,15 +20,17 @@ const iniciar = async () => {
   const sequelize = infra.crearSequelize(infra.configDB(), { logging: process.env.NODE_ENV === 'development' && console.log });
   const modelos = infra.definirModelos(sequelize);
   await sequelize.authenticate();
-  // En producción el esquema lo manejan las migraciones (npm run migrate)
-  if (process.env.NODE_ENV === 'development') await sequelize.sync({ alter: true });
 
   const realtime = new infra.SocketIoRealtimeAdapter({ jwtSecret, origenPermitido });
-  const { casos } = componer({
+  const { casos, modulos } = componer({
     sequelize, modelos, realtime, email: _crearEmail(), userDirectory: new infra.AuthcoreUserAdapter(infra.configAuthcore()),
+    modulos: infra.modulosHabilitados(),
   });
+  // Después de componer, para incluir los modelos de los módulos habilitados.
+  // En producción el esquema lo manejan las migraciones (npm run migrate)
+  if (process.env.NODE_ENV === 'development') await sequelize.sync({ alter: true });
   const trustProxy = parseInt(process.env.TRUST_PROXY || '0', 10);
-  const server = http.createServer(crearApp({ casos, jwtSecret, origenPermitido, trustProxy }));
+  const server = http.createServer(crearApp({ casos, modulos, jwtSecret, origenPermitido, trustProxy }));
   realtime.adjuntar(server);
   programarTareas({ casos });
 

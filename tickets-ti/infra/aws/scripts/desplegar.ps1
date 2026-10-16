@@ -10,6 +10,11 @@
 
 .EXAMPLE
   .\desplegar.ps1 -EmailAlertas tu@correo.com
+
+.EXAMPLE
+  .\desplegar.ps1 -EmailAlertas tu@correo.com -ModuloComentarios true
+  Enciende el módulo de comentarios de domain-service. Sin el parámetro se
+  conserva el valor que ya tenga el stack (por defecto, apagado).
 #>
 param(
     [Parameter(Mandatory = $true)][string]$EmailAlertas,
@@ -18,7 +23,8 @@ param(
     [string]$Region = 'us-east-1',
     [string]$UsuarioAdministrador = 'admin',
     [string]$EmailAdministrador = '',
-    [int]$PresupuestoMensualUsd = 40
+    [int]$PresupuestoMensualUsd = 40,
+    [ValidateSet('', 'true', 'false')][string]$ModuloComentarios = ''
 )
 
 $ErrorActionPreference = 'Stop'
@@ -92,7 +98,7 @@ function Desplegar-Authcore {
 
 function Desplegar-Dominio {
     param([string]$Tag, [string]$UrlFrontend, [hashtable]$Authcore)
-    $extra = @{ AuthcoreUrl = $Authcore.UrlApi; FrontendUrl = $UrlFrontend }
+    $extra = @{ AuthcoreUrl = $Authcore.UrlApi; FrontendUrl = $UrlFrontend; ModuloComentarios = $ModuloComentarios }
     $parametros = Parametros-Servicio 'domain-service' 3003 'tickets_domain' $extra
     # JWT_SECRET y AUTHCORE_INTERNAL_KEY deben ser idénticos en ambas cuentas
     $copiarSecretos = {
