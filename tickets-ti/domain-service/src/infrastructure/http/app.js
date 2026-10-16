@@ -25,7 +25,8 @@ const _montarRutas = (app, casos, verificarToken) => {
 // conoce Sequelize ni authcore): ver src/composicion.js.
 // trustProxy: número de proxies delante (nginx/ALB). Sin él, req.ip es la IP
 // del proxy y el rate limit se comparte entre todos los usuarios.
-const crearApp = ({ casos, jwtSecret, origenPermitido, esTest = false, logger = console, trustProxy = 0 }) => {
+// modulos: [{ ruta, router }] de src/modules/, ya compuestos (ver composicion.js)
+const crearApp = ({ casos, modulos = [], jwtSecret, origenPermitido, esTest = false, logger = console, trustProxy = 0 }) => {
   const app = express();
   if (trustProxy > 0) app.set('trust proxy', trustProxy);
   app.use(helmet());
@@ -35,7 +36,9 @@ const crearApp = ({ casos, jwtSecret, origenPermitido, esTest = false, logger = 
   app.use(crearRateLimiter({ deshabilitado: esTest }));
 
   app.get('/api/health', (req, res) => res.json({ success: true, data: { status: 'ok', servicio: 'domain-service' }, message: 'OK' }));
-  _montarRutas(app, casos, crearVerificarToken(jwtSecret));
+  const verificarToken = crearVerificarToken(jwtSecret);
+  _montarRutas(app, casos, verificarToken);
+  modulos.forEach(({ ruta, router }) => app.use(ruta, verificarToken, router));
   app.use((req, res) => res.status(404).json({ success: false, message: 'Ruta no encontrada', errors: [] }));
   app.use(crearErrorHandler(logger));
   return app;

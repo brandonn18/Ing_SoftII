@@ -24,4 +24,10 @@ const configAuthcore = () => ({
   timeoutMs: parseInt(process.env.AUTHCORE_TIMEOUT_MS || '3000', 10),
 });
 
-module.exports = { requerirEnv, configDB, configAuthcore };
+// Feature flags de los módulos de src/modules/. Apagados por defecto: sin la
+// variable, el servicio se comporta exactamente como antes del módulo.
+const modulosHabilitados = () => ({
+  comentarios: process.env.MODULO_COMENTARIOS === 'true',
+});
+
+module.exports = { requerirEnv, configDB, configAuthcore, modulosHabilitados };

@@ -81,6 +81,20 @@ Para publicar cambios de código, vuelve a ejecutar el mismo comando: construye
 imágenes nuevas, ECS las despliega sin downtime y, si una falla el health check,
 el circuit breaker regresa a la versión anterior.
 
+### Módulos opcionales de domain-service
+
+Los módulos de `domain-service/src/modules/` se encienden con un parámetro y no
+requieren cambios de red: CloudFront ya enruta todo `/api/*` a domain-service.
+
+```powershell
+.\desplegar.ps1 -EmailAlertas tu@correo.com -ModuloComentarios true   # monta /api/v1/tickets/:id/comentarios
+.\desplegar.ps1 -EmailAlertas tu@correo.com -ModuloComentarios false  # lo apaga (la tabla queda)
+```
+
+Sin el parámetro, el stack conserva el valor que ya tenía (por defecto, apagado).
+La migración de su tabla corre siempre al arrancar el contenedor (`db:migrate`),
+así que encender el módulo no necesita un paso aparte.
+
 ## Costos y créditos
 
 Aproximado por cuenta, en `us-east-1`:

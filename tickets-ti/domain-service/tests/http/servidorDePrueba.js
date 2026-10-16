@@ -20,7 +20,8 @@ const tokenPara = (usuario, opciones) => firmarComoAuthcore(usuario, opciones);
 const abrirServidorDePrueba = async () => {
   const bd = await abrirBdDePrueba();
   const ctx = { bd };
-  ctx.reiniciar = async ({ usuarios = Object.values(USUARIOS) } = {}) => {
+  // modulos: flags de src/modules/ (p. ej. { comentarios: true }); apagados por defecto
+  ctx.reiniciar = async ({ usuarios = Object.values(USUARIOS), modulos = {} } = {}) => {
     await bd.limpiar();
     await bd.modelos.SLAConfig.bulkCreate([
       { prioridad: 'critica', tiempo_horas: 4 }, { prioridad: 'alta', tiempo_horas: 8 },
@@ -30,9 +31,9 @@ const abrirServidorDePrueba = async () => {
     ctx.email = new EmailEspia();
     ctx.realtime = new RealtimeEspia();
     ctx.logger = { error: jest.fn(), info: jest.fn() };
-    const { casos, deps } = componer({ ...bd, userDirectory: ctx.directorio, email: ctx.email, realtime: ctx.realtime, logger: ctx.logger });
-    Object.assign(ctx, { casos, deps });
-    ctx.app = crearApp({ casos, jwtSecret: process.env.JWT_SECRET, origenPermitido: '*', esTest: true, logger: ctx.logger });
+    const compuesto = componer({ ...bd, userDirectory: ctx.directorio, email: ctx.email, realtime: ctx.realtime, logger: ctx.logger, modulos });
+    Object.assign(ctx, { casos: compuesto.casos, deps: compuesto.deps });
+    ctx.app = crearApp({ casos: compuesto.casos, modulos: compuesto.modulos, jwtSecret: process.env.JWT_SECRET, origenPermitido: '*', esTest: true, logger: ctx.logger });
   };
   // como(usuario).get('/api/...') → request autenticado
   ctx.como = (usuario) => {

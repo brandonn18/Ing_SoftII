@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const { io: clienteIo } = require('socket.io-client');
 const {
   AuthcoreUserAdapter, NodemailerEmailAdapter, transporterNulo, SocketIoRealtimeAdapter, NotificacionInAppAdapter, SystemClock,
-  requerirEnv, configAuthcore,
+  requerirEnv, configAuthcore, modulosHabilitados,
 } = require('../../src/infrastructure');
 const { escapar } = require('../../src/infrastructure/email/plantillas');
 const { ErrorDirectorioNoDisponible } = require('../../src/application/errores');
@@ -229,5 +229,15 @@ describe('SystemClock y configuración', () => {
     process.env.AUTHCORE_URL = 'http://authcore:8081';
     expect(configAuthcore()).toEqual({ baseUrl: 'http://authcore:8081', internalKey: process.env.AUTHCORE_INTERNAL_KEY, timeoutMs: 3000 });
     delete process.env.AUTHCORE_URL;
+  });
+
+  it('modulosHabilitados debería encender un módulo solo con el valor exacto "true"', () => {
+    delete process.env.MODULO_COMENTARIOS;
+    expect(modulosHabilitados()).toEqual({ comentarios: false });
+    process.env.MODULO_COMENTARIOS = '1';
+    expect(modulosHabilitados().comentarios).toBe(false);
+    process.env.MODULO_COMENTARIOS = 'true';
+    expect(modulosHabilitados().comentarios).toBe(true);
+    delete process.env.MODULO_COMENTARIOS;
   });
 });

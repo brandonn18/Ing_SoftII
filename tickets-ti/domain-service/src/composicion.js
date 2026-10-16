@@ -3,6 +3,7 @@
 // email, tiempo real y reloj.
 const app = require('./application');
 const infra = require('./infrastructure');
+const { crearModuloComentarios } = require('./modules/comentarios');
 
 const _repositorios = (modelos, sequelize) => ({
   ticketRepository: new infra.SequelizeTicketRepository(modelos),
@@ -29,12 +30,18 @@ const _casosDeUso = (deps) => {
   };
 };
 
-// adaptadores: { userDirectory, email, realtime, clock?, logger? }
-const componer = ({ sequelize, modelos, userDirectory, email, realtime, clock = new infra.SystemClock(), logger = console }) => {
+// Módulos opcionales (src/modules/): cada uno se arma solo si su flag está
+// encendido y devuelve { ruta, router } para que app.js lo monte.
+const _modulos = (habilitados, { sequelize, ticketRepository, clock }) => [
+  habilitados.comentarios && crearModuloComentarios({ sequelize, tickets: ticketRepository, clock }),
+].filter(Boolean);
+
+// adaptadores: { userDirectory, email, realtime, clock?, logger? } | modulos: { comentarios? }
+const componer = ({ sequelize, modelos, userDirectory, email, realtime, clock = new infra.SystemClock(), logger = console, modulos = {} }) => {
   const repos = _repositorios(modelos, sequelize);
   const notificaciones = new infra.NotificacionInAppAdapter({ repositorio: repos.notificacionRepository, realtime });
   const deps = { ...repos, notificaciones, userDirectory, email, realtime, clock, logger };
-  return { deps, casos: _casosDeUso(deps) };
+  return { deps, casos: _casosDeUso(deps), modulos: _modulos(modulos, { sequelize, ...deps }) };
 };
 
 module.exports = { componer };

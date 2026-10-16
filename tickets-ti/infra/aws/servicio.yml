@@ -53,6 +53,11 @@ Parameters:
     Type: String
     Default: ''
     Description: Solo authcore. Email opcional del primer administrador (notificaciones).
+  ModuloComentarios:
+    Type: String
+    Default: 'false'
+    AllowedValues: ['true', 'false']
+    Description: Solo domain-service. Monta /api/v1/tickets/:id/comentarios (src/modules/comentarios).
   EmailAlertas:
     Type: String
     AllowedPattern: '^[^@\s]+@[^@\s]+\.[^@\s]+$'
@@ -322,6 +327,7 @@ Resources:
             # authcore crea el primer administrador al arrancar si no existe (idempotente)
             - !If [EsAuthcore, { Name: ADMIN_USERNAME, Value: !Ref UsuarioAdministrador }, !Ref 'AWS::NoValue']
             - !If [TieneEmailAdmin, { Name: ADMIN_EMAIL, Value: !Ref EmailAdministrador }, !Ref 'AWS::NoValue']
+            - !If [EsAuthcore, !Ref 'AWS::NoValue', { Name: MODULO_COMENTARIOS, Value: !Ref ModuloComentarios }]
           Secrets:
             - { Name: DB_USER, ValueFrom: !Sub '${SecretoBaseDatos}:username::' }
             - { Name: DB_PASSWORD, ValueFrom: !Sub '${SecretoBaseDatos}:password::' }
