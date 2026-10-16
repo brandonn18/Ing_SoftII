@@ -1,7 +1,7 @@
 'use strict';
 
-// Módulo de comentarios (src/modules/comentarios). Tabla nueva: no altera las
-// existentes, así que se puede aplicar aunque el módulo esté apagado.
+// Comentarios de tickets (src/modules/*_comentarios). Tabla nueva: no altera las
+// existentes, así que se puede aplicar aunque los módulos estén apagados.
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('ticket_comentarios', {

@@ -1,8 +1,8 @@
 // Contrato de ComentarioRepository: el doble en memoria y el adaptador
 // Sequelize deben comportarse igual (LSP).
-const { Comentario } = require('../../../src/modules/comentarios/domain');
-const { definirModeloComentario } = require('../../../src/modules/comentarios');
-const SequelizeComentarioRepository = require('../../../src/modules/comentarios/adapters/persistencia/SequelizeComentarioRepository');
+const { Comentario } = require('../../../src/modules/hexagonal_comentarios/domain');
+const { definirModeloComentario } = require('../../../src/modules/hexagonal_comentarios');
+const SequelizeComentarioRepository = require('../../../src/modules/hexagonal_comentarios/adapters/persistencia/SequelizeComentarioRepository');
 const { abrirBdDePrueba } = require('../../infrastructure/bdDePrueba');
 const { ComentarioRepositoryEnMemoria } = require('./fakes');
 

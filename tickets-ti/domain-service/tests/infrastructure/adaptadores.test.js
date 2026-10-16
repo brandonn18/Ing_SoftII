@@ -233,7 +233,7 @@ describe('SystemClock y configuración', () => {
 
   it('modulosHabilitados debería encender un módulo solo con el valor exacto "true"', () => {
     delete process.env.MODULO_COMENTARIOS;
-    expect(modulosHabilitados()).toEqual({ comentarios: false });
+    expect(modulosHabilitados()).toEqual({ comentarios: false, capas: false, mvc: false, oop: false });
     process.env.MODULO_COMENTARIOS = '1';
     expect(modulosHabilitados().comentarios).toBe(false);
     process.env.MODULO_COMENTARIOS = 'true';

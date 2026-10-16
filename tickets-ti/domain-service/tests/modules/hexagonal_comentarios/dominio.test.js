@@ -1,4 +1,4 @@
-const { Comentario, LONGITUD_MAXIMA, politicaComentarios } = require('../../../src/modules/comentarios/domain');
+const { Comentario, LONGITUD_MAXIMA, politicaComentarios } = require('../../../src/modules/hexagonal_comentarios/domain');
 
 const AHORA = new Date('2026-10-15T12:00:00.000Z');
 const LUIS = { id: 10, nombre: 'Luis Usuario', rol: 'usuario' };

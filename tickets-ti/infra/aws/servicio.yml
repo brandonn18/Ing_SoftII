@@ -57,7 +57,22 @@ Parameters:
     Type: String
     Default: 'false'
     AllowedValues: ['true', 'false']
-    Description: Solo domain-service. Monta /api/v1/tickets/:id/comentarios (src/modules/comentarios).
+    Description: Solo domain-service. Monta /api/v1/tickets/:id/comentarios (src/modules/hexagonal_comentarios).
+  ModuloCapas:
+    Type: String
+    Default: 'false'
+    AllowedValues: ['true', 'false']
+    Description: Solo domain-service. Monta /api/v1/capas/tickets/:id/comentarios (src/modules/capas_comentarios).
+  ModuloMvc:
+    Type: String
+    Default: 'false'
+    AllowedValues: ['true', 'false']
+    Description: Solo domain-service. Monta el panel HTML /api/v1/mvc/tickets/:id/comentarios (src/modules/mvc_comentarios).
+  ModuloOop:
+    Type: String
+    Default: 'false'
+    AllowedValues: ['true', 'false']
+    Description: Solo domain-service. Monta /api/v1/oop/tickets/:id/comentarios (src/modules/oop_comentarios).
   EmailAlertas:
     Type: String
     AllowedPattern: '^[^@\s]+@[^@\s]+\.[^@\s]+$'
@@ -328,6 +343,9 @@ Resources:
             - !If [EsAuthcore, { Name: ADMIN_USERNAME, Value: !Ref UsuarioAdministrador }, !Ref 'AWS::NoValue']
             - !If [TieneEmailAdmin, { Name: ADMIN_EMAIL, Value: !Ref EmailAdministrador }, !Ref 'AWS::NoValue']
             - !If [EsAuthcore, !Ref 'AWS::NoValue', { Name: MODULO_COMENTARIOS, Value: !Ref ModuloComentarios }]
+            - !If [EsAuthcore, !Ref 'AWS::NoValue', { Name: MODULO_CAPAS, Value: !Ref ModuloCapas }]
+            - !If [EsAuthcore, !Ref 'AWS::NoValue', { Name: MODULO_MVC, Value: !Ref ModuloMvc }]
+            - !If [EsAuthcore, !Ref 'AWS::NoValue', { Name: MODULO_OOP, Value: !Ref ModuloOop }]
           Secrets:
             - { Name: DB_USER, ValueFrom: !Sub '${SecretoBaseDatos}:username::' }
             - { Name: DB_PASSWORD, ValueFrom: !Sub '${SecretoBaseDatos}:password::' }

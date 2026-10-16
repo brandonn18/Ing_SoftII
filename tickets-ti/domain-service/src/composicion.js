@@ -3,7 +3,10 @@
 // email, tiempo real y reloj.
 const app = require('./application');
 const infra = require('./infrastructure');
-const { crearModuloComentarios } = require('./modules/comentarios');
+const { crearModuloComentarios } = require('./modules/hexagonal_comentarios');
+const { crearModuloCapas } = require('./modules/capas_comentarios');
+const { crearModuloMVC } = require('./modules/mvc_comentarios');
+const { crearModuloOOP } = require('./modules/oop_comentarios');
 
 const _repositorios = (modelos, sequelize) => ({
   ticketRepository: new infra.SequelizeTicketRepository(modelos),
@@ -31,17 +34,21 @@ const _casosDeUso = (deps) => {
 };
 
 // Módulos opcionales (src/modules/): cada uno se arma solo si su flag está
-// encendido y devuelve { ruta, router } para que app.js lo monte.
-const _modulos = (habilitados, { sequelize, ticketRepository, clock }) => [
+// encendido y devuelve { ruta, router } para que app.js lo monte. Los cuatro
+// implementan comentarios de tickets, cada uno con una arquitectura distinta.
+const _modulos = (habilitados, { sequelize, modelos, ticketRepository, clock }) => [
   habilitados.comentarios && crearModuloComentarios({ sequelize, tickets: ticketRepository, clock }),
+  habilitados.capas && crearModuloCapas({ sequelize }),
+  habilitados.mvc && crearModuloMVC({ sequelize, modelos }),
+  habilitados.oop && crearModuloOOP({ sequelize, ticketRepository }),
 ].filter(Boolean);
 
-// adaptadores: { userDirectory, email, realtime, clock?, logger? } | modulos: { comentarios? }
+// adaptadores: { userDirectory, email, realtime, clock?, logger? } | modulos: { comentarios?, capas?, mvc?, oop? }
 const componer = ({ sequelize, modelos, userDirectory, email, realtime, clock = new infra.SystemClock(), logger = console, modulos = {} }) => {
   const repos = _repositorios(modelos, sequelize);
   const notificaciones = new infra.NotificacionInAppAdapter({ repositorio: repos.notificacionRepository, realtime });
   const deps = { ...repos, notificaciones, userDirectory, email, realtime, clock, logger };
-  return { deps, casos: _casosDeUso(deps), modulos: _modulos(modulos, { sequelize, ...deps }) };
+  return { deps, casos: _casosDeUso(deps), modulos: _modulos(modulos, { sequelize, modelos, ...deps }) };
 };
 
 module.exports = { componer };

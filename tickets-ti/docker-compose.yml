@@ -88,6 +88,9 @@ services:
       DB_PASSWORD: ${DOMAIN_DB_PASSWORD}
       AUTHCORE_URL: http://authcore:8081
       MODULO_COMENTARIOS: ${MODULO_COMENTARIOS:-false}
+      MODULO_CAPAS: ${MODULO_CAPAS:-false}
+      MODULO_MVC: ${MODULO_MVC:-false}
+      MODULO_OOP: ${MODULO_OOP:-false}
     depends_on:
       postgres-domain:
         condition: service_healthy

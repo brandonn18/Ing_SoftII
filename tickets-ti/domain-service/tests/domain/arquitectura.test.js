@@ -12,10 +12,23 @@ const CAPAS = [
   { nombre: 'application', prohibidos: [...FRAMEWORKS, /infrastructure\//], sinReloj: true },
   // Los controllers solo traducen HTTP → caso de uso: nada de Sequelize ni repositorios
   { nombre: 'infrastructure/http', prohibidos: [/^sequelize/, /^pg/, /persistencia\//, /directorio\//], sinReloj: false },
-  // Módulo aislado: las mismas reglas dentro de src/modules/comentarios/
-  { nombre: 'modules/comentarios/domain', prohibidos: [...FRAMEWORKS, /application\//, /infrastructure\//, /adapters\//], sinReloj: true },
-  { nombre: 'modules/comentarios/application', prohibidos: [...FRAMEWORKS, /infrastructure\//, /adapters\//], sinReloj: true },
-  { nombre: 'modules/comentarios/adapters/http', prohibidos: [/^sequelize/, /^pg/, /persistencia\//], sinReloj: false },
+  // Hexagonal: las mismas reglas del núcleo dentro de su carpeta
+  { nombre: 'modules/hexagonal_comentarios/domain', prohibidos: [...FRAMEWORKS, /application\//, /infrastructure\//, /adapters\//], sinReloj: true },
+  { nombre: 'modules/hexagonal_comentarios/application', prohibidos: [...FRAMEWORKS, /infrastructure\//, /adapters\//], sinReloj: true },
+  { nombre: 'modules/hexagonal_comentarios/adapters/http', prohibidos: [/^sequelize/, /^pg/, /persistencia\//], sinReloj: false },
+  // Capas: cada capa solo conoce a la de abajo (presentation → business → data)
+  { nombre: 'modules/capas_comentarios/presentation', prohibidos: [/^sequelize/, /^pg/, /data\//], sinReloj: false },
+  { nombre: 'modules/capas_comentarios/business', prohibidos: [...FRAMEWORKS, /presentation\//, /infrastructure\//], sinReloj: true },
+  { nombre: 'modules/capas_comentarios/data', prohibidos: [/^express/, /business\//, /presentation\//], sinReloj: false },
+  // MVC: el modelo no conoce vistas ni controladores; la vista no consulta datos;
+  // el controlador recibe los modelos ya construidos
+  { nombre: 'modules/mvc_comentarios/models', prohibidos: [/^express/, /views\//, /controllers\//], sinReloj: true },
+  { nombre: 'modules/mvc_comentarios/views', prohibidos: [...FRAMEWORKS, /models\//, /controllers\//], sinReloj: true },
+  { nombre: 'modules/mvc_comentarios/controllers', prohibidos: [/^sequelize/, /^pg/, /models\//], sinReloj: false },
+  // OOP: entidades e interfaces puras; el servicio solo conoce interfaces
+  { nombre: 'modules/oop_comentarios/entidades', prohibidos: [...FRAMEWORKS, /interfaces\//, /servicios\//, /infraestructura\//], sinReloj: true },
+  { nombre: 'modules/oop_comentarios/interfaces', prohibidos: [...FRAMEWORKS, /servicios\//, /infraestructura\//], sinReloj: true },
+  { nombre: 'modules/oop_comentarios/servicios', prohibidos: [...FRAMEWORKS, /infraestructura\//], sinReloj: true },
 ];
 
 const listarJs = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
@@ -62,6 +75,14 @@ describe('Aislamiento de src/modules/', () => {
       .filter((imp) => /modules\//.test(imp))
       .filter((imp) => rel(a) !== 'composicion.js' || !/^\.\/modules\/[^/]+$/.test(imp))
       .map((imp) => `${rel(a)} → ${imp}`));
+    expect(ilegales).toEqual([]);
+  });
+
+  it('un módulo no debería importar archivos de otro módulo', () => {
+    const nombres = fs.readdirSync(MODULOS, { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => e.name);
+    const ilegales = nombres.flatMap((propio) => listarJs(path.join(MODULOS, propio)).flatMap((a) => importsDe(a)
+      .filter((imp) => nombres.some((otro) => otro !== propio && imp.includes(`/${otro}`)))
+      .map((imp) => `${rel(a)} → ${imp}`)));
     expect(ilegales).toEqual([]);
   });
 

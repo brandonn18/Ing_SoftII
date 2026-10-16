@@ -1,4 +1,4 @@
-# Módulo `comentarios`
+# Comentarios con arquitectura hexagonal (`hexagonal_comentarios`)
 
 Hilo de comentarios por ticket, construido como **módulo hexagonal aislado**
 dentro de domain-service. Sirve de plantilla para agregar requerimientos nuevos
@@ -65,7 +65,7 @@ flag de `env.js` y revertir la migración.
 ## Tests
 
 ```powershell
-npx jest tests/modules/comentarios
+npx jest tests/modules/hexagonal_comentarios
 ```
 
 - `dominio.test.js`: entidad y política, sin base de datos.

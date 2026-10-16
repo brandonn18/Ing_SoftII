@@ -1,4 +1,4 @@
-const { crearCasosComentarios, ComentarTicket } = require('../../../src/modules/comentarios/application');
+const { crearCasosComentarios, ComentarTicket } = require('../../../src/modules/hexagonal_comentarios/application');
 const { TicketRepositoryEnMemoria, RelojFijo } = require('../../application/fakes');
 const { ComentarioRepositoryEnMemoria } = require('./fakes');
 
