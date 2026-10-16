@@ -15,6 +15,10 @@
   .\desplegar.ps1 -EmailAlertas tu@correo.com -ModuloComentarios true
   Enciende el módulo de comentarios de domain-service. Sin el parámetro se
   conserva el valor que ya tenga el stack (por defecto, apagado).
+
+.EXAMPLE
+  .\desplegar.ps1 -EmailAlertas tu@correo.com -ModuloComentarios true -ModuloCapas true -ModuloMvc true -ModuloOop true
+  Enciende las cuatro versiones de comentarios (hexagonal, capas, MVC y OOP).
 #>
 param(
     [Parameter(Mandatory = $true)][string]$EmailAlertas,
@@ -24,7 +28,10 @@ param(
     [string]$UsuarioAdministrador = 'admin',
     [string]$EmailAdministrador = '',
     [int]$PresupuestoMensualUsd = 40,
-    [ValidateSet('', 'true', 'false')][string]$ModuloComentarios = ''
+    [ValidateSet('', 'true', 'false')][string]$ModuloComentarios = '',
+    [ValidateSet('', 'true', 'false')][string]$ModuloCapas = '',
+    [ValidateSet('', 'true', 'false')][string]$ModuloMvc = '',
+    [ValidateSet('', 'true', 'false')][string]$ModuloOop = ''
 )
 
 $ErrorActionPreference = 'Stop'
@@ -98,7 +105,10 @@ function Desplegar-Authcore {
 
 function Desplegar-Dominio {
     param([string]$Tag, [string]$UrlFrontend, [hashtable]$Authcore)
-    $extra = @{ AuthcoreUrl = $Authcore.UrlApi; FrontendUrl = $UrlFrontend; ModuloComentarios = $ModuloComentarios }
+    $extra = @{
+        AuthcoreUrl = $Authcore.UrlApi; FrontendUrl = $UrlFrontend
+        ModuloComentarios = $ModuloComentarios; ModuloCapas = $ModuloCapas; ModuloMvc = $ModuloMvc; ModuloOop = $ModuloOop
+    }
     $parametros = Parametros-Servicio 'domain-service' 3003 'tickets_domain' $extra
     # JWT_SECRET y AUTHCORE_INTERNAL_KEY deben ser idénticos en ambas cuentas
     $copiarSecretos = {

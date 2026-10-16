@@ -2,7 +2,7 @@
 // pruebas y JWT firmado como authcore. También verifica el feature flag.
 const request = require('supertest');
 const { abrirServidorDePrueba, USUARIOS } = require('../../http/servidorDePrueba');
-const { definirModeloComentario } = require('../../../src/modules/comentarios');
+const { definirModeloComentario } = require('../../../src/modules/hexagonal_comentarios');
 
 const { admin, ana, beto, luis, maria } = USUARIOS;
 let s;

@@ -1,6 +1,6 @@
 // Doble en memoria del puerto ComentarioRepository del módulo.
-const { Comentario } = require('../../../src/modules/comentarios/domain');
-const { ComentarioRepository } = require('../../../src/modules/comentarios/application/ports');
+const { Comentario } = require('../../../src/modules/hexagonal_comentarios/domain');
+const { ComentarioRepository } = require('../../../src/modules/hexagonal_comentarios/application/ports');
 
 class ComentarioRepositoryEnMemoria extends ComentarioRepository {
   constructor() { super(); this.filas = []; }

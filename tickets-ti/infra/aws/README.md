@@ -86,9 +86,16 @@ el circuit breaker regresa a la versión anterior.
 Los módulos de `domain-service/src/modules/` se encienden con un parámetro y no
 requieren cambios de red: CloudFront ya enruta todo `/api/*` a domain-service.
 
+| Parámetro | Carpeta | Ruta |
+| --- | --- | --- |
+| `-ModuloComentarios` | `hexagonal_comentarios` | `/api/v1/tickets/:id/comentarios` |
+| `-ModuloCapas` | `capas_comentarios` | `/api/v1/capas/tickets/:id/comentarios` |
+| `-ModuloMvc` | `mvc_comentarios` | `/api/v1/mvc/tickets/:id/comentarios` (HTML, solo admin) |
+| `-ModuloOop` | `oop_comentarios` | `/api/v1/oop/tickets/:id/comentarios` |
+
 ```powershell
-.\desplegar.ps1 -EmailAlertas tu@correo.com -ModuloComentarios true   # monta /api/v1/tickets/:id/comentarios
-.\desplegar.ps1 -EmailAlertas tu@correo.com -ModuloComentarios false  # lo apaga (la tabla queda)
+.\desplegar.ps1 -EmailAlertas tu@correo.com -ModuloCapas true    # enciende uno
+.\desplegar.ps1 -EmailAlertas tu@correo.com -ModuloCapas false   # lo apaga (la tabla queda)
 ```
 
 Sin el parámetro, el stack conserva el valor que ya tenía (por defecto, apagado).
